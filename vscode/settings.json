@@ -1,0 +1,27 @@
+{
+    "editor.tabSize": 4,
+    "js/ts.suggest.autoImports": false,
+    "js/ts.updateImportsOnFileMove.enabled": "always",
+    "files.trimTrailingWhitespace": true,
+    "eslint.alwaysShowStatus": true,
+    "eslint.format.enable": true,
+    "eslint.run": "onSave",
+    "eslint.workingDirectories": [{ "mode": "auto" }],
+    // Terminal settings
+    "terminal.integrated.fontFamily": "'JetBrainsMono NF'",
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
+    "terminal.integrated.profiles.windows": {
+        "Git Bash": {
+            "path": "C:\\Program Files\\Git\\bin\\bash.exe",
+            "icon": "terminal-bash"
+        }
+    },
+    "workbench.sideBar.location": "right",
+    "[graphql]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+    },
+        "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    }
+}

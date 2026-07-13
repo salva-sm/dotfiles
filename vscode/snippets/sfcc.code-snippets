@@ -1,0 +1,127 @@
+{
+    "--- JAVASCRIPT / CONTROLLERS ---": {
+        "scope": "javascript,typescript",
+        "prefix": "sfcc-info",
+        "body": [
+            "// SFCC JS Snippets Loaded"
+        ],
+        "description": "Marker for JS Snippets"
+    },
+    "SFCC Service Definition": {
+        "scope": "javascript,typescript",
+        "prefix": "service",
+        "body": [
+            "var LocalServiceRegistry = require('dw/svc/LocalServiceRegistry');",
+            "",
+            "var ${1:serviceName} = LocalServiceRegistry.createService('${2:serviceID}', {",
+            "    createRequest: function (svc, params) {",
+            "        svc.setRequestMethod('${3:POST}');",
+            "        svc.addHeader('Content-Type', 'application/json');",
+            "        return JSON.stringify(params);",
+            "    },",
+            "    parseResponse: function (svc, httpClient) {",
+            "        return JSON.parse(httpClient.text);",
+            "    },",
+            "    filterLogMessage: function (msg) {",
+            "        return msg;",
+            "    }",
+            "});",
+            "",
+            "module.exports = ${1:serviceName};"
+        ],
+        "description": "Create a new SFCC LocalServiceRegistry service"
+    },
+    "SFCC Get Controller": {
+        "scope": "javascript,typescript",
+        "prefix": "serverget",
+        "body": [
+            "server.get('${1:endpointName}', ${2:middleware}, function (req, res, next) {",
+            "    ${0:return next();}",
+            "});"
+        ],
+        "description": "Initialize server endpoint with GET method"
+    },
+    "SFCC Post Controller": {
+        "scope": "javascript,typescript",
+        "prefix": "serverpost",
+        "body": [
+            "server.post('${1:endpointName}', ${2:middleware}, function (req, res, next) {",
+            "    ${0:return next();}",
+            "});"
+        ],
+        "description": "Initialize server endpoint with POST method"
+    },
+    "SFCC Prepend Controller": {
+        "scope": "javascript,typescript",
+        "prefix": "serverprepend",
+        "body": [
+            "server.prepend('${1:endpointName}', ${2:middleware}, function (req, res, next) {",
+            "    ${0:return next();}",
+            "});"
+        ],
+        "description": "Initialize server endpoint with PREPEND method"
+    },
+    "SFCC Append Controller": {
+        "scope": "javascript,typescript",
+        "prefix": "serverappend",
+        "body": [
+            "server.append('${1:endpointName}', ${2:middleware}, function (req, res, next) {",
+            "    ${0:return next();}",
+            "});"
+        ],
+        "description": "Initialize server endpoint with APPEND method"
+    },
+    "SFCC Resource Message (JS)": {
+        "scope": "javascript,typescript",
+        "prefix": "resource",
+        "body": [
+            "var Resource = require('dw/web/Resource');",
+            "Resource.msg('${1:key}', '${2:bundle}', null)$0"
+        ],
+        "description": "Get a resource message from a bundle in JS"
+    },
+    "SFCC Logger": {
+        "scope": "javascript,typescript",
+        "prefix": "logger",
+        "body": [
+            "var Logger = require('dw/system/Logger').getLogger('${1:category}', '${2:prefix}');",
+            "Logger.debug('${3:message} : {0}', ${4:variable});"
+        ],
+        "description": "Standard SFCC Logger with category"
+    },
+    "SFCC Transaction Wrapper": {
+        "scope": "javascript,typescript",
+        "prefix": "transaction",
+        "body": [
+            "var Transaction = require('dw/system/Transaction');",
+            "Transaction.wrap(function () {",
+            "    $0",
+            "});"
+        ],
+        "description": "Wrap code in a SFCC Database Transaction"
+    },
+    "--- ISML TEMPLATES ---": {
+        "scope": "isml,html",
+        "prefix": "isml-info",
+        "body": [
+            ""
+        ],
+        "description": "Marker for ISML Snippets"
+    },
+    "Print ISML variable": {
+        "scope": "isml,html",
+        "prefix": "printisml",
+        "body": [
+            "<isscript> out.print(JSON.stringify($1)); </isscript>"
+        ],
+        "description": "Print ISML variable for debugging"
+    },
+    "ISML Property": {
+        "scope": "isml,html",
+        "prefix": "property",
+        "body": [
+            "\\${Resource.msg('$1','$2', null)}"
+        ],
+        "description": "ISML Resource.msg property template"
+    }
+}

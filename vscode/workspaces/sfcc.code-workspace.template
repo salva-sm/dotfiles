@@ -1,0 +1,42 @@
+{
+	"folders": [
+		{
+			"name": "${SFCC_PROJECT_NAME}",
+			"path": "${SFCC_PROJECT_DIR}"
+		}
+	],
+	"settings": {
+		"editor.tabSize": 4,
+		"files.exclude": {
+			"**/.map": true,
+			"**/static/default/fonts": true
+		},
+		"search.exclude": {
+			"**/static/*": true,
+			"**/node_modules": true
+		},
+		"eslint.workingDirectories": [
+			{ "directory": "./source", "changeProcessCWD": true }
+		],
+		"eslint.options": {
+			"configFile": "./source/.eslintrc.js"
+		},
+		"extension.prophet.sitecontext.selectedSiteID": ""
+	},
+	"launch": {
+		"configurations": [
+			{
+				"type": "prophet",
+				"request": "launch",
+				"name": "Attach to Sandbox"
+			}
+		]
+	},
+	"extensions": {
+		"recommendations": [
+			"prophet.prophet",
+			"dbaeumer.vscode-eslint",
+			"eamodio.gitlens"
+		]
+	}
+}
