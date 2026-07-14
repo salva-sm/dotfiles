@@ -6,6 +6,12 @@ Anything machine- or project-specific (paths, names) lives in a local file that
 is **not versioned** (`git-bash/env.local`), so the repository stays generic and
 reusable.
 
+## Demo
+
+<p align="center">
+  <img src="docs/demo.png" alt="Terminal prompt demo" width="800">
+</p>
+
 ## Contents
 
 ```
