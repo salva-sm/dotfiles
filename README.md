@@ -48,8 +48,9 @@ The script:
 
 Restart Git Bash when it finishes.
 
-> ⚠️ **Warning:** `install.sh` overwrites your `~/.bashrc` and VS Code `settings.json`
-> without creating a backup. Back them up manually if you have existing config to keep.
+> 💾 **Backups:** any existing `~/.bashrc`, `settings.json` or `snippets` is saved
+> to a `.bak` alongside it before being replaced. The backup is made only once, so
+> re-running `install.sh` never clobbers your original. `uninstall.sh` restores them.
 
 ## Local configuration
 
@@ -81,10 +82,13 @@ sfcc
 bash uninstall.sh
 ```
 
-Removes the generated `~/.bashrc`, the VS Code symlinks and the generated
-workspace. Your `env.local` is kept.
+Removes the generated `~/.bashrc` and the VS Code links, restores any `.bak`
+backups made at install time, and removes the generated workspace. Your
+`env.local` is kept.
 
 ## Notes
 
 - The SFCC snippets are generic and reusable in any SFRA project.
 - `git-prompt.sh` renders a two-line prompt (date/time, user@host, path, branch).
+- On Windows, `ln -s` needs Developer Mode (or an admin shell) to create real
+  symlinks; otherwise it falls back to copying the files, which works the same.
