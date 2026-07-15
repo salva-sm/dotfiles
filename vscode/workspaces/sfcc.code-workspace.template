@@ -3,6 +3,10 @@
 		{
 			"name": "${SFCC_PROJECT_NAME}",
 			"path": "${SFCC_PROJECT_DIR}"
+		},
+		{
+			"name": "${PLAYWRIGHT_PROJECT_NAME}",
+			"path": "${PLAYWRIGHT_PROJECT_DIR}"
 		}
 	],
 	"settings": {
@@ -36,7 +40,8 @@
 		"recommendations": [
 			"prophet.prophet",
 			"dbaeumer.vscode-eslint",
-			"eamodio.gitlens"
+			"eamodio.gitlens",
+			"ms-playwright.playwright"
 		]
 	}
 }

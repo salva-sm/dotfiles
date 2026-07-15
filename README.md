@@ -70,7 +70,16 @@ export SFCC_PROJECT_NAME="📦 My SFCC Project"
 # Path to your project, RELATIVE to vscode/workspaces/
 # e.g. project at ~/Github/my-project  ->  ../../../my-project
 export SFCC_PROJECT_DIR="../../../my-project"
+
+# Second workspace folder: the Playwright end-to-end test repo.
+# Same relative-path rule as SFCC_PROJECT_DIR.
+export PLAYWRIGHT_PROJECT_NAME="🎭 Playwright Tests"
+export PLAYWRIGHT_PROJECT_DIR="../../../sfcc-playwright-test"
 ```
+
+The generated workspace opens as a multi-root workspace with both folders (the
+SFCC project and the Playwright test repo) and recommends the
+`ms-playwright.playwright` extension.
 
 > A `.code-workspace` JSON **cannot** read environment variables in its folder
 > `path`, which is why the workspace is **generated** from the template.

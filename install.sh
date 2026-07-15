@@ -51,6 +51,8 @@ WS_OUTPUT="$DOTFILES_DIR/vscode/workspaces/sfcc.code-workspace"
 if [ -f "$WS_TEMPLATE" ]; then
     : ${SFCC_PROJECT_NAME:="📦 SFCC Project"}
     : ${SFCC_PROJECT_DIR:="../../../CHANGE_ME"}
+    : ${PLAYWRIGHT_PROJECT_NAME:="🎭 Playwright Tests"}
+    : ${PLAYWRIGHT_PROJECT_DIR:="../../../sfcc-playwright-test"}
     # Replace a literal token with a literal value (pure prefix/suffix ops —
     # no sed/regex, so & | \ in the value can never corrupt the output).
     subst() {
@@ -65,9 +67,13 @@ if [ -f "$WS_TEMPLATE" ]; then
     # forward slashes, so no backslash escaping is needed).
     name=$(subst "$SFCC_PROJECT_NAME" '"' '\"')
     dir=$(subst "$SFCC_PROJECT_DIR" '"' '\"')
+    pwname=$(subst "$PLAYWRIGHT_PROJECT_NAME" '"' '\"')
+    pwdir=$(subst "$PLAYWRIGHT_PROJECT_DIR" '"' '\"')
     ws=$(cat "$WS_TEMPLATE")
     ws=$(subst "$ws" '${SFCC_PROJECT_NAME}' "$name")
     ws=$(subst "$ws" '${SFCC_PROJECT_DIR}' "$dir")
+    ws=$(subst "$ws" '${PLAYWRIGHT_PROJECT_NAME}' "$pwname")
+    ws=$(subst "$ws" '${PLAYWRIGHT_PROJECT_DIR}' "$pwdir")
     printf '%s\n' "$ws" > "$WS_OUTPUT"
     echo "🧩 Generated workspace: vscode/workspaces/sfcc.code-workspace"
 fi
