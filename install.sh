@@ -5,10 +5,12 @@ DOTFILES_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 HOME_DIR=$HOME
 
 if command -v cygpath >/dev/null 2>&1; then
-    VSCODE_USER_DIR="$(cygpath "$APPDATA")/Code/User"
+    APPDATA_DIR="$(cygpath "$APPDATA")"
 else
-    VSCODE_USER_DIR="/c/Users/$USER/AppData/Roaming/Code/User"
+    APPDATA_DIR="/c/Users/$USER/AppData/Roaming"
 fi
+VSCODE_USER_DIR="$APPDATA_DIR/Code/User"
+ZED_USER_DIR="$APPDATA_DIR/Zed"
 
 echo "🚀 Installing dotfiles..."
 
@@ -22,7 +24,61 @@ if [ ! -f "$ENV_LOCAL" ] && [ -f "$ENV_EXAMPLE" ]; then
 fi
 [ -f "$ENV_LOCAL" ] && source "$ENV_LOCAL"
 
-# --- 1. Git Bash loader ---
+# --- 1. Interactive choices ---
+# Answers live in env.local, so a re-run defaults to the previous choice and a
+# non-interactive run keeps it.
+
+ask() {
+    local prompt=$1 default=$2 reply=""
+    if ! read -r -p "$prompt" reply; then
+        reply=""
+        # Probe /dev/tty quietly: it doesn't exist in every environment.
+        if [ ! -t 0 ] && { : < /dev/tty; } 2>/dev/null; then
+            read -r -p "$prompt" reply < /dev/tty || reply=""
+        fi
+    fi
+    printf '%s' "${reply:-$default}"
+}
+
+# Upsert `export KEY="value"` in env.local without touching the other lines.
+set_env_var() {
+    local key=$1 value=$2 tmp="$ENV_LOCAL.tmp" line
+    : > "$tmp"
+    if [ -f "$ENV_LOCAL" ]; then
+        while IFS= read -r line || [ -n "$line" ]; do
+            case $line in
+                "export $key="*|"$key="*) ;;
+                *) printf '%s\n' "$line" >> "$tmp" ;;
+            esac
+        done < "$ENV_LOCAL"
+    fi
+    printf 'export %s="%s"\n' "$key" "$value" >> "$tmp"
+    mv "$tmp" "$ENV_LOCAL"
+}
+
+: ${DOTFILES_CUSTOM_PROMPT:="yes"}
+answer=$(ask "❓ Use the custom Git Bash prompt (git-prompt.sh)? [yes/no] ($DOTFILES_CUSTOM_PROMPT): " "$DOTFILES_CUSTOM_PROMPT")
+case $(printf '%s' "$answer" | tr '[:upper:]' '[:lower:]') in
+    y|yes|s|si|sí) DOTFILES_CUSTOM_PROMPT="yes" ;;
+    n|no)          DOTFILES_CUSTOM_PROMPT="no" ;;
+esac
+set_env_var DOTFILES_CUSTOM_PROMPT "$DOTFILES_CUSTOM_PROMPT"
+if [ "$DOTFILES_CUSTOM_PROMPT" = "yes" ]; then
+    echo "🎨 Custom prompt enabled."
+else
+    echo "🎨 Custom prompt skipped (Git Bash keeps its default prompt)."
+fi
+
+: ${DOTFILES_EDITOR:="code"}
+answer=$(ask "❓ Favourite code editor? [1] VS Code  [2] Zed ($DOTFILES_EDITOR): " "$DOTFILES_EDITOR")
+case $(printf '%s' "$answer" | tr '[:upper:]' '[:lower:]') in
+    1|code|vscode|"vs code") DOTFILES_EDITOR="code" ;;
+    2|zed)                   DOTFILES_EDITOR="zed" ;;
+esac
+set_env_var DOTFILES_EDITOR "$DOTFILES_EDITOR"
+echo "🧑‍💻 Editor: $DOTFILES_EDITOR"
+
+# --- 2. Git Bash loader ---
 echo "📝 Configuring Git Bash loader..."
 
 BASHRC="$HOME_DIR/.bashrc"
@@ -44,7 +100,7 @@ EOF
 
 echo "✅ .bashrc loader created."
 
-# --- 2. Generate VS Code workspace ---
+# --- 3. Generate VS Code workspace ---
 # .code-workspace JSON can't expand env vars, so render it from the template.
 WS_TEMPLATE="$DOTFILES_DIR/vscode/workspaces/sfcc.code-workspace.template"
 WS_OUTPUT="$DOTFILES_DIR/vscode/workspaces/sfcc.code-workspace"
@@ -78,8 +134,8 @@ if [ -f "$WS_TEMPLATE" ]; then
     echo "🧩 Generated workspace: vscode/workspaces/sfcc.code-workspace"
 fi
 
-# --- 3. Link VS Code config ---
-link_vscode() {
+# --- 4. Link editor config ---
+link_editor() {
     local src="$1"
     local dest="$2"
     # Back up a real (non-symlink) target once before replacing it.
@@ -89,14 +145,25 @@ link_vscode() {
     fi
     # Drop any leftover (e.g. a symlink from a previous run).
     [ -e "$dest" ] && rm -rf "$dest"
-    echo "🔗 Linking VS Code: $(basename "$dest")"
+    echo "🔗 Linking: $(basename "$dest")"
     export MSYS_WINSYM_LINKS=1
     ln -s "$src" "$dest"
 }
 
-if [ -d "$VSCODE_USER_DIR" ]; then
-    [ -f "$DOTFILES_DIR/vscode/settings.json" ] && link_vscode "$DOTFILES_DIR/vscode/settings.json" "$VSCODE_USER_DIR/settings.json"
-    [ -d "$DOTFILES_DIR/vscode/snippets" ] && link_vscode "$DOTFILES_DIR/vscode/snippets" "$VSCODE_USER_DIR/snippets"
+if [ "$DOTFILES_EDITOR" = "zed" ]; then
+    # Zed may not have run yet, so create its config directory if needed.
+    mkdir -p "$ZED_USER_DIR"
+    if [ -d "$DOTFILES_DIR/zed" ]; then
+        [ -f "$DOTFILES_DIR/zed/settings.json" ] && link_editor "$DOTFILES_DIR/zed/settings.json" "$ZED_USER_DIR/settings.json"
+        [ -f "$DOTFILES_DIR/zed/keymap.json" ] && link_editor "$DOTFILES_DIR/zed/keymap.json" "$ZED_USER_DIR/keymap.json"
+        # Zed uses its own snippet format (snippets/*.json), so the VS Code
+        # .code-snippets files are not linked here.
+    else
+        echo "⚠️  No zed/ config in this repo. Skipping links."
+    fi
+elif [ -d "$VSCODE_USER_DIR" ]; then
+    [ -f "$DOTFILES_DIR/vscode/settings.json" ] && link_editor "$DOTFILES_DIR/vscode/settings.json" "$VSCODE_USER_DIR/settings.json"
+    [ -d "$DOTFILES_DIR/vscode/snippets" ] && link_editor "$DOTFILES_DIR/vscode/snippets" "$VSCODE_USER_DIR/snippets"
 else
     echo "⚠️  VS Code user directory not found. Skipping links."
 fi

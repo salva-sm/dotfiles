@@ -5,10 +5,12 @@ DOTFILES_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 HOME_DIR=$HOME
 
 if command -v cygpath >/dev/null 2>&1; then
-    VSCODE_USER_DIR="$(cygpath "$APPDATA")/Code/User"
+    APPDATA_DIR="$(cygpath "$APPDATA")"
 else
-    VSCODE_USER_DIR="/c/Users/$USER/AppData/Roaming/Code/User"
+    APPDATA_DIR="/c/Users/$USER/AppData/Roaming"
 fi
+VSCODE_USER_DIR="$APPDATA_DIR/Code/User"
+ZED_USER_DIR="$APPDATA_DIR/Zed"
 
 echo "🔄 Reverting Dotfiles changes..."
 
@@ -21,8 +23,8 @@ if [ -f "$HOME_DIR/.bashrc.bak" ]; then
     mv "$HOME_DIR/.bashrc.bak" "$HOME_DIR/.bashrc"
 fi
 
-# --- 2. Revert VS Code ---
-unlink_vscode() {
+# --- 2. Revert editor config (both editors: the choice may have changed) ---
+unlink_editor() {
     local target="$1"
     if [ -L "$target" ]; then
         echo "🗑️  Removing link: $(basename "$target")"
@@ -35,8 +37,10 @@ unlink_vscode() {
     fi
 }
 
-unlink_vscode "$VSCODE_USER_DIR/settings.json"
-unlink_vscode "$VSCODE_USER_DIR/snippets"
+unlink_editor "$VSCODE_USER_DIR/settings.json"
+unlink_editor "$VSCODE_USER_DIR/snippets"
+unlink_editor "$ZED_USER_DIR/settings.json"
+unlink_editor "$ZED_USER_DIR/keymap.json"
 
 # --- 3. Remove generated workspace (keeps your env.local) ---
 WS_OUTPUT="$DOTFILES_DIR/vscode/workspaces/sfcc.code-workspace"

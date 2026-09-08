@@ -1,0 +1,26 @@
+{
+    "theme": "Ayu Dark",
+    "auto_install_extensions": {
+        "ayu": true
+    },
+    "tab_size": 4,
+    "remove_trailing_whitespace_on_save": true,
+    "format_on_save": "on",
+    "code_actions_on_format": {
+        "source.fixAll.eslint": true
+    },
+    "project_panel": {
+        "dock": "right"
+    },
+    "terminal": {
+        "font_family": "JetBrainsMono NF",
+        "shell": {
+            "program": "C:\\Program Files\\Git\\bin\\bash.exe"
+        }
+    },
+    "languages": {
+        "JavaScript": {
+            "language_servers": ["...", "eslint"]
+        }
+    }
+}
